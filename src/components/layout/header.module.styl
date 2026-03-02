@@ -1,0 +1,118 @@
+.header
+  position sticky
+  top 0
+  z-index 50
+  background-color #FFF1E5
+
+.claretBorder
+  height 3px
+  background-color #9E2F50
+  width 100%
+
+.headerInner
+  display flex
+  align-items center
+  justify-content space-between
+  padding 1rem 0
+  border-bottom 1px solid #E8D6C4
+
+.wordmark
+  font-family var(--font-playfair), Georgia, 'Times New Roman', serif
+  font-size 1.75rem
+  font-weight 900
+  letter-spacing 0.04em
+  text-transform uppercase
+  color #1A1A2E
+  text-decoration none
+  transition color 0.15s ease
+
+  &:hover
+    color #1A1A2E
+    text-decoration none
+
+.desktopNav
+  display flex
+  align-items center
+  gap 2rem
+
+  @media (max-width: 768px)
+    display none
+
+.navLink
+  font-family var(--font-inter), system-ui, sans-serif
+  font-size 0.75rem
+  font-weight 600
+  text-transform uppercase
+  letter-spacing 0.1em
+  color #666E80
+  text-decoration none
+  padding 0.25rem 0
+  transition color 0.15s ease
+
+  &:hover
+    color #1A1A2E
+    text-decoration none
+
+.navLinkActive
+  color #1A1A2E
+  border-bottom 2px solid #0D7680
+
+.authSection
+  display flex
+  align-items center
+
+.avatarButton
+  background none
+  border none
+  cursor pointer
+  padding 0
+  display flex
+  align-items center
+
+.signInLink
+  font-family var(--font-inter), system-ui, sans-serif
+  font-size 0.8rem
+  font-weight 600
+  text-transform uppercase
+  letter-spacing 0.05em
+  color #1A1A2E
+  text-decoration none
+
+  &:hover
+    color #0D7680
+    text-decoration none
+
+.mobileMenuButton
+  display none
+  background none
+  border none
+  cursor pointer
+  color #1A1A2E
+  padding 0.25rem
+
+  @media (max-width: 768px)
+    display flex
+    align-items center
+
+.mobileNav
+  display none
+  flex-direction column
+  padding 1rem 0
+  border-bottom 1px solid #E8D6C4
+
+  @media (max-width: 768px)
+    display flex
+
+.mobileNavLink
+  font-family var(--font-inter), system-ui, sans-serif
+  font-size 0.875rem
+  font-weight 500
+  color #1A1A2E
+  text-decoration none
+  padding 0.75rem 0
+  border-bottom 1px solid #F2DFCE
+
+  &:hover
+    color #0D7680
+    text-decoration none
+
