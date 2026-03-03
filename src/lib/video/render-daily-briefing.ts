@@ -7,7 +7,8 @@ import {
 import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import { COMP_NAME } from '@/remotion/Root'
+
+const COMP_NAME = 'DailyBriefing'
 
 const BUNDLE_DIR = '.remotion'
 
