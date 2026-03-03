@@ -44,6 +44,8 @@ export async function POST(request: Request) {
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
+        const periodEnd = (subscription as { current_period_end?: number })
+          .current_period_end
 
         await prisma.subscription.upsert({
           where: { userId },
@@ -52,39 +54,53 @@ export async function POST(request: Request) {
             stripeSubscriptionId: subscription.id,
             status: subscription.status,
             priceId: subscription.items.data[0].price.id,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: periodEnd
+              ? new Date(periodEnd * 1000)
+              : new Date(),
           },
           update: {
             stripeSubscriptionId: subscription.id,
             status: subscription.status,
             priceId: subscription.items.data[0].price.id,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: periodEnd
+              ? new Date(periodEnd * 1000)
+              : new Date(),
           },
         })
         break
       }
 
       case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice
-        const subscriptionId = invoice.subscription as string
+        const invoice = event.data.object as Stripe.Invoice & {
+          subscription?: string
+        }
+        const subscriptionId = invoice.subscription as string | undefined
 
         if (!subscriptionId) break
 
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const subscription = await stripe.subscriptions.retrieve(
+          subscriptionId
+        )
+        const periodEnd = (subscription as { current_period_end?: number })
+          .current_period_end
 
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscriptionId },
           data: {
             status: subscription.status,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: periodEnd
+              ? new Date(periodEnd * 1000)
+              : new Date(),
           },
         })
         break
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-        const subscriptionId = invoice.subscription as string
+        const invoice = event.data.object as Stripe.Invoice & {
+          subscription?: string
+        }
+        const subscriptionId = invoice.subscription as string | undefined
 
         if (!subscriptionId) break
 
@@ -96,14 +112,19 @@ export async function POST(request: Request) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
+        const subscription = event.data.object as Stripe.Subscription & {
+          current_period_end?: number
+          cancel_at_period_end?: boolean
+        }
 
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscription.id },
           data: {
             status: subscription.status,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+            currentPeriodEnd: subscription.current_period_end
+              ? new Date(subscription.current_period_end * 1000)
+              : new Date(),
+            cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
           },
         })
         break

@@ -32,8 +32,8 @@ export async function fetchSource(source: Source): Promise<ScrapedArticle[]> {
   try {
     const feed = await parser.parseURL(source.url)
 
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    const oneDayAgo = new Date()
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1)
 
     const articles: ScrapedArticle[] = []
 
@@ -42,8 +42,8 @@ export async function fetchSource(source: Source): Promise<ScrapedArticle[]> {
 
       const pubDate = item.pubDate ? new Date(item.pubDate) : null
 
-      // Filter to last 7 days if date available
-      if (pubDate && pubDate < oneWeekAgo) continue
+      // Filter to last 24 hours if date available
+      if (pubDate && pubDate < oneDayAgo) continue
 
       const snippet = item.contentSnippet
         || item.content

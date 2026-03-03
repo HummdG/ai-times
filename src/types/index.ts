@@ -20,6 +20,18 @@ export interface NewsletterData {
   items: NewsItemData[]
 }
 
+export interface DailyUpdateData {
+  id: string
+  title: string
+  summary: string
+  script: string
+  videoUrl: string | null
+  audioUrl: string | null
+  date: Date
+  publishedAt: Date
+  items: NewsItemData[]
+}
+
 export interface UserData {
   id: string
   name: string | null
@@ -61,5 +73,6 @@ export interface AIProvider {
   summarizeArticle: (article: ScrapedArticle) => Promise<string>
   generateEditorial: (articles: ScrapedArticle[]) => Promise<string>
   generateTitle: (articles: ScrapedArticle[]) => Promise<string>
+  generateScript: (articles: ScrapedArticle[]) => Promise<string>
 }
 

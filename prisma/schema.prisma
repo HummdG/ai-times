@@ -89,19 +89,39 @@ model Newsletter {
   @@unique([weekNumber, year])
 }
 
-model NewsItem {
-  id           String  @id @default(cuid())
-  newsletterId String
-  title        String
-  summary      String  @db.Text
-  sourceUrl    String
-  sourceName   String
-  category     String
-  imageUrl     String?
-  publishedAt  DateTime?
+model DailyUpdate {
+  id          String     @id @default(cuid())
+  title       String
+  summary     String     @db.Text
+  script      String     @db.Text
+  videoUrl    String?
+  audioUrl    String?
+  date        DateTime   @db.Date
+  publishedAt DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  newsletter Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  items NewsItem[]
+
+  @@unique([date])
+}
+
+model NewsItem {
+  id             String       @id @default(cuid())
+  newsletterId   String?
+  dailyUpdateId  String?
+  title          String
+  summary        String       @db.Text
+  sourceUrl      String
+  sourceName     String
+  category       String
+  imageUrl       String?
+  publishedAt    DateTime?
+
+  newsletter  Newsletter?  @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  dailyUpdate DailyUpdate? @relation(fields: [dailyUpdateId], references: [id], onDelete: Cascade)
 
   @@index([newsletterId])
+  @@index([dailyUpdateId])
   @@index([category])
 }

@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import styles from './header.module.styl'
 
 const navLinks = [
-  { href: '/newsletters', label: 'Newsletters' },
+  { href: '/updates', label: 'Daily Briefings' },
 ]
 
 export function Header() {

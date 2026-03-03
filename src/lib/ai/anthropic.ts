@@ -26,6 +26,17 @@ The title should:
 - Sound like a Financial Times headline — authoritative, concise, no clickbait
 Return only the title, nothing else.`
 
+const SCRIPT_SYSTEM_PROMPT = `You are the anchor of "AI Times Daily", a video briefing on AI news.
+Write a narration script (2-4 minutes when spoken) from these articles. Use British English.
+The script should:
+- Open with a brief intro ("This is AI Times Daily for [date]...")
+- Flow naturally from one story to the next—no bullet points or list formatting
+- Summarise each development conversationally, as if reading a news bulletin
+- Include a brief sign-off ("That's AI Times Daily. Full links are below.")
+- Be 400-600 words (roughly 3-4 minutes at typical speaking pace)
+- Sound authoritative and measured, like a professional newsreader
+Output plain text only. No markdown, no headers. Write in continuous prose.`
+
 export function createAnthropicProvider(): AIProvider {
   const client = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
@@ -89,6 +100,27 @@ export function createAnthropicProvider(): AIProvider {
 
       const textBlock = response.content.find(block => block.type === 'text')
       return textBlock && 'text' in textBlock ? textBlock.text.trim() : 'This Week in AI'
+    },
+
+    async generateScript(articles: ScrapedArticle[]): Promise<string> {
+      const articleList = articles
+        .map(a => `- ${a.title} (${a.sourceName}): ${a.snippet.substring(0, 200)}`)
+        .join('\n')
+
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        system: SCRIPT_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: `Write the narration script for today's AI Times Daily video briefing, based on these articles:\n\n${articleList}`,
+          },
+        ],
+      })
+
+      const textBlock = response.content.find(block => block.type === 'text')
+      return textBlock && 'text' in textBlock ? textBlock.text.trim() : ''
     },
   }
 }

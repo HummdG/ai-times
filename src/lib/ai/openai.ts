@@ -26,6 +26,17 @@ The title should:
 - Sound like a Financial Times headline — authoritative, concise, no clickbait
 Return only the title, nothing else.`
 
+const SCRIPT_SYSTEM_PROMPT = `You are the anchor of "AI Times Daily", a video briefing on AI news.
+Write a narration script (2-4 minutes when spoken) from these articles. Use British English.
+The script should:
+- Open with a brief intro ("This is AI Times Daily for [date]...")
+- Flow naturally from one story to the next—no bullet points or list formatting
+- Summarise each development conversationally, as if reading a news bulletin
+- Include a brief sign-off ("That's AI Times Daily. Full links are below.")
+- Be 400-600 words (roughly 3-4 minutes at typical speaking pace)
+- Sound authoritative and measured, like a professional newsreader
+Output plain text only. No markdown, no headers. Write in continuous prose.`
+
 export function createOpenAIProvider(): AIProvider {
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -89,6 +100,27 @@ export function createOpenAIProvider(): AIProvider {
       })
 
       return response.choices[0].message.content?.trim() ?? 'This Week in AI'
+    },
+
+    async generateScript(articles: ScrapedArticle[]): Promise<string> {
+      const articleList = articles
+        .map(a => `- ${a.title} (${a.sourceName}): ${a.snippet.substring(0, 200)}`)
+        .join('\n')
+
+      const response = await client.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: SCRIPT_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: `Write the narration script for today's AI Times Daily video briefing, based on these articles:\n\n${articleList}`,
+          },
+        ],
+        temperature: 0.5,
+        max_tokens: 800,
+      })
+
+      return response.choices[0].message.content?.trim() ?? ''
     },
   }
 }

@@ -53,8 +53,8 @@ function groupByCategory(
   return grouped
 }
 
-const MAX_ARTICLES_PER_CATEGORY = 5
-const MAX_TOTAL_ARTICLES = 20
+const MAX_ARTICLES_PER_CATEGORY = 3
+const MAX_TOTAL_ARTICLES = 12
 
 export async function aggregateNews(): Promise<{
   articles: ScrapedArticle[]
