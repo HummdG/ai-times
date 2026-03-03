@@ -7,6 +7,8 @@ import { generateAndUploadAudio } from '@/lib/video/elevenlabs-tts'
 import { renderDailyBriefing } from '@/lib/video/render-daily-briefing'
 import { sendDailyUpdateToSubscribers } from '@/lib/email/send-daily-update'
 
+export const maxDuration = 300
+
 function getTodayDate(): Date {
   const now = new Date()
   return new Date(now.getFullYear(), now.getMonth(), now.getDate())
