@@ -1,16 +1,23 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-02-25.clover',
-  typescript: true,
-})
+let _stripe: Stripe | null = null
+
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2026-02-25.clover',
+      typescript: true,
+    })
+  }
+  return _stripe
+}
 
 export async function createCheckoutSession(
   userId: string,
   email: string,
   customerId?: string | null
 ): Promise<string> {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     customer: customerId ?? undefined,
     customer_email: customerId ? undefined : email,
     mode: 'subscription',
@@ -39,7 +46,7 @@ export async function createCheckoutSession(
 export async function createCustomerPortalSession(
   customerId: string
 ): Promise<string> {
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: customerId,
     return_url: `${process.env.NEXTAUTH_URL}/account`,
   })
