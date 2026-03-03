@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run remotion:bundle && next build",
+    "build": "prisma generate && npm run remotion:bundle && next build",
     "remotion:bundle": "remotion bundle --out-dir .remotion",
     "start": "next start",
     "lint": "eslint",
